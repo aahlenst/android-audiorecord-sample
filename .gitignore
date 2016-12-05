@@ -1,0 +1,18 @@
+# Exclude Mac files
+.DS_Store
+._*
+
+# Exclude build output
+build
+.gradle
+
+# Exclude IDE configuration
+.idea
+*.iml
+.classpath
+.project
+
+# Exclude user configuration
+local.properties
+gradle.properties
+
