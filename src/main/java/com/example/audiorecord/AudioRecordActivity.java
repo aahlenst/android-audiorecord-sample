@@ -147,12 +147,31 @@ public class AudioRecordActivity extends AppCompatActivity {
 
             try (final FileOutputStream outStream = new FileOutputStream(file)) {
                 while (recordingInProgress.get()) {
-                    recorder.read(buffer, BUFFER_SIZE);
+                    int result = recorder.read(buffer, BUFFER_SIZE);
+                    if (result < 0) {
+                        throw new RuntimeException("Reading of audio buffer failed: " +
+                                getBufferReadFailureReason(result));
+                    }
                     outStream.write(buffer.array(), 0, BUFFER_SIZE);
                     buffer.clear();
                 }
             } catch (IOException e) {
                 throw new RuntimeException("Writing of recorded audio failed", e);
+            }
+        }
+
+        private String getBufferReadFailureReason(int errorCode) {
+            switch (errorCode) {
+                case AudioRecord.ERROR_INVALID_OPERATION:
+                    return "ERROR_INVALID_OPERATION";
+                case AudioRecord.ERROR_BAD_VALUE:
+                    return "ERROR_BAD_VALUE";
+                case AudioRecord.ERROR_DEAD_OBJECT:
+                    return "ERROR_DEAD_OBJECT";
+                case AudioRecord.ERROR:
+                    return "ERROR";
+                default:
+                    return "Unknown (" + errorCode + ")";
             }
         }
     }
